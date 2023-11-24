@@ -35,7 +35,8 @@ namespace SharpKZ
         public override string ModuleVersion => "0.0.1";
         public override string ModuleAuthor => "DEAFPS https://github.com/DEAFPS/";
         public override string ModuleDescription => "A simple CSS KZ Plugin";
-
+        
+        public string msgPrefix = "\x06 [SharpKZ] >>> \x0D";
         public Vector currentMapStartC1 = new Vector(0, 0, 0);
         public Vector currentMapStartC2 = new Vector(0, 0, 0);
         public Vector currentMapEndC1 = new Vector(0, 0, 0);
@@ -43,6 +44,7 @@ namespace SharpKZ
 
         public override void Load(bool hotReload)
         {
+
             RegisterEventHandler<EventPlayerConnectFull>((@event, info) =>
             {
                 var player = @event.Userid;
@@ -58,42 +60,11 @@ namespace SharpKZ
 
                     // Initialize player-specific timer properties
                     playerTimers[player.UserId ?? 0] = new PlayerTimerInfo();
-
-                    // Get map name
-                    string currentMapName = Server.MapName;
-
-                    // Define the json file path
-                    string mapdataFileName = "SharpKZ/mapdata.json";
-                    string mapdataPath = Path.Join(Server.GameDirectory + "/csgo/cfg", mapdataFileName);
-
-                    // Load map data from JSON for the current map.
-                    if (File.Exists(mapdataPath))
-                    {
-                        string json = File.ReadAllText(mapdataPath);
-                        var mapData = JsonSerializer.Deserialize<Dictionary<string, MapInfo>>(json);
-
-                        if (mapData.TryGetValue(currentMapName, out var mapInfo))
-                        {
-                            // Set currentMapStart
-                            currentMapStartC1 = ParseVector(mapInfo.MapStartC1);
-                            currentMapStartC2 = ParseVector(mapInfo.MapStartC2);
-
-                            // Set currentMapEnd
-                            currentMapEndC1 = ParseVector(mapInfo.MapEndC1);
-                            currentMapEndC2 = ParseVector(mapInfo.MapEndC2);
-                        }
-                    }
-
                     return HookResult.Continue;
                 }
             });
 
-            RegisterEventHandler<EventGameNewmap>((@event, info) =>
-            {
-                
-
-                return HookResult.Continue;
-            });
+            LoadConfig();
 
             RegisterEventHandler<EventPlayerDisconnect>((@event, info) =>
             {
@@ -173,6 +144,7 @@ namespace SharpKZ
             if (IsVectorInsideBox(playerPos, currentMapEndC1, currentMapEndC2))
             {
                 // print time to chat and end the timer
+                Server.PrintToChatAll($"{msgPrefix} {player.PlayerName} just finished the map in: [{FormatTime(playerTimers[player.UserId ?? 0].TimerTicks)}]!");
                 OnTimerStop(player);
             }
         }
@@ -223,6 +195,36 @@ namespace SharpKZ
 
             // If parsing fails, return a vector with zeros
             return new Vector(0, 0, 0);
+        }
+
+        private void LoadConfig()
+        {
+            Server.ExecuteCommand("exec SharpKZ/kz.cfg");
+
+            // Get map name
+            string currentMapName = Server.MapName;
+
+            // Define the json file path
+            string mapdataFileName = "SharpKZ/mapdata.json";
+            string mapdataPath = Path.Join(Server.GameDirectory + "/csgo/cfg", mapdataFileName);
+
+            // Load map data from JSON for the current map.
+            if (File.Exists(mapdataPath))
+            {
+                string json = File.ReadAllText(mapdataPath);
+                var mapData = JsonSerializer.Deserialize<Dictionary<string, MapInfo>>(json);
+
+                if (mapData.TryGetValue(currentMapName, out var mapInfo))
+                {
+                    // Set currentMapStart
+                    currentMapStartC1 = ParseVector(mapInfo.MapStartC1);
+                    currentMapStartC2 = ParseVector(mapInfo.MapStartC2);
+
+                    // Set currentMapEnd
+                    currentMapEndC1 = ParseVector(mapInfo.MapEndC1);
+                    currentMapEndC2 = ParseVector(mapInfo.MapEndC2);
+                }
+            }
         }
     }
 }
