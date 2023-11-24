@@ -1,0 +1,14 @@
+{
+    "kz_victoria": {
+        "MapStartC1": "1536 -1366 38",
+		"MapStartC2": "1785 -1118 38",
+        "MapEndC1": "719 1856 443",
+        "MapEndC2": "472.76 1608 443"
+    },
+    "kz_someothermap": {
+        "MapStartC1": "1536 -1366 38",
+		"MapStartC2": "1785 -1118 38",
+        "MapEndC1": "719 1856 443",
+        "MapEndC2": "472.76 1608 443"
+    }
+}
