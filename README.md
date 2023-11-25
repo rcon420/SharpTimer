@@ -19,6 +19,7 @@ Players PBs
 ### Installing
 
 * Unzip into your servers `game/csgo`
+* Its recommended to have a custom server cfg with your desired settings (for example surf or kz)
 
 ## Commands
 - `!r` --Teleports the player back to Spawn
