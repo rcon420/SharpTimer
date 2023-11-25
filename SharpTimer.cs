@@ -10,7 +10,7 @@ using System.Numerics;
 using System.Text.Json;
 using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
 
-namespace SharpKZ
+namespace SharpTimer
 {
     public class MapInfo
     {
@@ -26,25 +26,26 @@ namespace SharpKZ
         public int TimerTicks { get; set; }
     }
 
-    public partial class SharpKZ : BasePlugin
+    public partial class SharpTimer : BasePlugin
     {
         private Dictionary<int, PlayerTimerInfo> playerTimers = new Dictionary<int, PlayerTimerInfo>();
         private List<CCSPlayerController> connectedPlayers = new List<CCSPlayerController>();
 
-        public override string ModuleName => "SharpKZ";
+        public override string ModuleName => "SharpTimer";
         public override string ModuleVersion => "0.0.1";
         public override string ModuleAuthor => "DEAFPS https://github.com/DEAFPS/";
         public override string ModuleDescription => "A simple CSS KZ Plugin";
         
-        public string msgPrefix = "\x06 [SharpKZ] >>> \x0D";
+        public string msgPrefix = "\x06 [SharpTimer] >>> \x0D";
         public Vector currentMapStartC1 = new Vector(0, 0, 0);
         public Vector currentMapStartC2 = new Vector(0, 0, 0);
         public Vector currentMapEndC1 = new Vector(0, 0, 0);
         public Vector currentMapEndC2 = new Vector(0, 0, 0);
 
+        public bool configLoaded = false;
+
         public override void Load(bool hotReload)
         {
-
             RegisterEventHandler<EventPlayerConnectFull>((@event, info) =>
             {
                 var player = @event.Userid;
@@ -60,11 +61,16 @@ namespace SharpKZ
 
                     // Initialize player-specific timer properties
                     playerTimers[player.UserId ?? 0] = new PlayerTimerInfo();
+
                     return HookResult.Continue;
                 }
             });
 
-            LoadConfig();
+            RegisterEventHandler<EventRoundStart>((@event, info) =>
+            {
+                    LoadConfig();
+                    return HookResult.Continue;
+            });
 
             RegisterEventHandler<EventPlayerDisconnect>((@event, info) =>
             {
@@ -119,7 +125,7 @@ namespace SharpKZ
                 }
             });
 
-            Console.WriteLine("[SharpKZ] Plugin Loaded");
+            Console.WriteLine("[SharpTimer] Plugin Loaded");
         }
 
         // Helper method to format seconds into MM:SS format
@@ -199,13 +205,11 @@ namespace SharpKZ
 
         private void LoadConfig()
         {
-            Server.ExecuteCommand("exec SharpKZ/kz.cfg");
-
             // Get map name
             string currentMapName = Server.MapName;
 
             // Define the json file path
-            string mapdataFileName = "SharpKZ/mapdata.json";
+            string mapdataFileName = "SharpTimer/mapdata.json";
             string mapdataPath = Path.Join(Server.GameDirectory + "/csgo/cfg", mapdataFileName);
 
             // Load map data from JSON for the current map.
