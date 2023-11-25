@@ -150,7 +150,6 @@ namespace SharpTimer
             if (IsVectorInsideBox(playerPos, currentMapEndC1, currentMapEndC2))
             {
                 // print time to chat and end the timer
-                Server.PrintToChatAll($"{msgPrefix} {player.PlayerName} just finished the map in: [{FormatTime(playerTimers[player.UserId ?? 0].TimerTicks)}]!");
                 OnTimerStop(player);
             }
         }
@@ -181,9 +180,10 @@ namespace SharpTimer
 
         public void OnTimerStop(CCSPlayerController? player)
         {
-            if (player == null) return;
+            if (player == null || playerTimers[player.UserId ?? 0].IsTimerRunning == false) return;
 
             // Set IsTimerRunning to false for the player
+            Server.PrintToChatAll($"{msgPrefix} {player.PlayerName} just finished the map in: [{FormatTime(playerTimers[player.UserId ?? 0].TimerTicks)}]!");
             playerTimers[player.UserId ?? 0].IsTimerRunning = false;
         }
 
