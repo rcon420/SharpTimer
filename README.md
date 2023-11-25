@@ -53,11 +53,7 @@ Players PBs
   }
 }
 ```
-* To whitelist players add their SteamID3 to the allowedPlayers table in whitelist.lua
-
-* To add admins edit the `adminPlayers` table in `pug_cfg.lua`
-
-* To add custom nade lineups for the Pracc mode navigate to game/csgo/cfg/dea_pugplugin_praccnades.cfg` and follow the example given there
+* I will try to add more map data by default in the future :) pull requests are also welcome
 
 ## Author
 [@DEAFPS_](https://twitter.com/deafps_)
