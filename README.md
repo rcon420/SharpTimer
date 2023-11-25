@@ -18,7 +18,7 @@ Players PBs
 
 ### Installing
 
-* Unzip into your servers `game/csgo`
+* Unzip into your servers `game/` dir
 * Its recommended to have a custom server cfg with your desired settings (for example surf or kz)
 
 ## Commands
