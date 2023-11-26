@@ -20,6 +20,11 @@ Players PBs
 
 * Unzip into your servers `game/csgo/` dir
 * Its recommended to have a custom server cfg with your desired settings (for example surf or kz)
+  
+  Like this one for Surf: https://raw.githubusercontent.com/DEAFPS/cs-cfg/main/surf.cfg
+  
+  You can replace the contents of `gamemode_competitive.cfg` or `gamemode_casual.cfg` with it
+  
 * Here a collection of maps supported by default: https://steamcommunity.com/sharedfiles/filedetails/?id=3095738559
 
 ## Commands
