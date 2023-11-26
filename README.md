@@ -1,5 +1,5 @@
 # SharpTimer
-SharpTimer is a simple Surf/KZ CS2 Timer plugin using CounterStrikeSharp
+SharpTimer is a simple Surf/KZ/Bhop CS2 Timer plugin using CounterStrikeSharp
 
 ### Dependencies
 
