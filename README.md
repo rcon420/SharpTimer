@@ -20,6 +20,7 @@ Players PBs
 
 * Unzip into your servers `game/` dir
 * Its recommended to have a custom server cfg with your desired settings (for example surf or kz)
+* Here a collection of maps supported by default: https://steamcommunity.com/sharedfiles/filedetails/?id=3095738559
 
 ## Commands
 - `!r` --Teleports the player back to Spawn
@@ -34,6 +35,7 @@ Players PBs
   After that set the `RespawnPos` to the coordinates you with the player will get teleported to once they use `!r`
 
   To get the coordinates you can use either the console command `cl_showpos 1` or `getpos` to get the coordinates of where your player currently is.
+
   
 ```
 {
