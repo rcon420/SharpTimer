@@ -3,11 +3,6 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Numerics;
 using System.Text.Json;
 using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
 
@@ -96,40 +91,6 @@ namespace SharpTimer
 
                     return HookResult.Continue;
                 }
-            });
-
-            RegisterEventHandler<EventPlayerChat>((@event, info) =>
-            {
-                var playerID = @event.Userid;
-                var msg = @event.Text.Trim().ToLower();
-
-                var player = connectedPlayers.FirstOrDefault(p => p.UserId == playerID);
-
-                if (player == null)
-                {
-                    return HookResult.Continue;
-                }
-
-                if (msg.StartsWith("!"))
-                {
-                    var parts = msg.Split(' ');
-                    var command = parts[0];
-                    var arguments = parts.Skip(1).ToArray();
-
-                    switch (command)
-                    {
-                        case "!top":
-                            PrintTopRecords(player);
-                            break;
-                        case "!r":
-                            RespawnPlayer(player);
-                            break;
-                        default:
-                            break;
-                    }
-                    return HookResult.Continue;
-                }
-                return HookResult.Continue;
             });
 
             RegisterListener<Listeners.OnTick>(() =>
@@ -353,7 +314,9 @@ namespace SharpTimer
             return new Vector(0, 0, 0);
         }
 
-        public void PrintTopRecords(CCSPlayerController? player)
+        [ConsoleCommand("css_top", "Prints top players of this map")]
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
+        public void PrintTopRecords(CCSPlayerController? player, CommandInfo command)
         {
             if (player == null) return;
 
@@ -378,7 +341,9 @@ namespace SharpTimer
             }
         }
 
-        public void RespawnPlayer(CCSPlayerController? player)
+        [ConsoleCommand("css_r", "Teleports you to start")]
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
+        public void RespawnPlayer(CCSPlayerController? player, CommandInfo command)
         {
             if (player == null) return;
             player.PlayerPawn.Value.Teleport(currentRespawnPos, new QAngle(0, 0, 0), new Vector(0, 0, 0));
