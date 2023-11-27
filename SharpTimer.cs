@@ -515,7 +515,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void RespawnPlayer(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null) return;
+            if (player == null || respawnEnabled == false) return;
 
             if(useTriggers == true)
             {
