@@ -56,6 +56,7 @@ namespace SharpTimer
         public bool useTriggers = true;
         public bool respawnEnabled = true;
         public bool topEnabled = true;
+        public bool rankEnabled = true;
 
         public string beepSound = "sounds/ui/csgo_ui_button_rollover_large.vsnd";
 
@@ -489,7 +490,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void PrintTopRecords(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null) return;
+            if (player == null || topEnabled == false) return;
 
             string currentMapName = Server.MapName;
 
@@ -510,6 +511,15 @@ namespace SharpTimer
                 player.PrintToChat(msgPrefix + $" #{rank}: {ChatColors.Green}{playerName} {ChatColors.White}- {ChatColors.Green}{FormatTime(record.Value)}");
                 rank++;
             }
+        }
+
+        [ConsoleCommand("css_rank", "Tells you your rank on this map")]
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
+        public void RankCommand(CCSPlayerController? player, CommandInfo command)
+        {
+            if (player == null || rankEnabled == false) return;
+
+            player.PrintToChat(msgPrefix + $" {GetPlayerPlacementWithTotal(player)}");
         }
 
         [ConsoleCommand("css_r", "Teleports you to start")]
