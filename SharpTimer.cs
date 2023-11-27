@@ -54,7 +54,7 @@ namespace SharpTimer
         public Vector currentRespawnPos = new Vector(0, 0, 0);
 
         public bool useTriggers = true;
-        public bool noMapData = false;
+        public bool respawnEnabled = true;
 
         public string beepSound = "sounds/ui/csgo_ui_button_rollover_large.vsnd";
 
@@ -532,6 +532,9 @@ namespace SharpTimer
 
         private void LoadConfig()
         {
+            
+            Server.ExecuteCommand("exec SharpTimer/config.cfg");
+            
             string currentMapName = Server.MapName;
 
             string mapdataFileName = "SharpTimer/mapdata.json";
