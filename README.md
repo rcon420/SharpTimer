@@ -10,7 +10,7 @@ CounterStrikeSharp: https://docs.cssharp.dev/
 ## Features
 Timer, Speedometer and Keys
 
-![alt text](https://i.imgur.com/v6zmECN.png)
+![alt text](https://i.imgur.com/Y2BGvwd.png)
 
 Players PBs
 
