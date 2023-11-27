@@ -1,5 +1,5 @@
 # SharpTimer
-SharpTimer is a simple Surf/KZ CS2 Timer plugin using CounterStrikeSharp
+SharpTimer is a simple Surf/KZ/Bhop CS2 Timer plugin using CounterStrikeSharp
 
 ### Dependencies
 
@@ -18,8 +18,13 @@ Players PBs
 
 ### Installing
 
-* Unzip into your servers `game/` dir
+* Unzip into your servers `game/csgo/` dir
 * Its recommended to have a custom server cfg with your desired settings (for example surf or kz)
+  
+  Like this one for Surf: https://raw.githubusercontent.com/DEAFPS/cs-cfg/main/surf.cfg
+  
+  You can replace the contents of `gamemode_competitive.cfg` or `gamemode_casual.cfg` with it
+  
 * Here a collection of maps supported by default: https://steamcommunity.com/sharedfiles/filedetails/?id=3095738559
 
 ## Commands
@@ -28,31 +33,47 @@ Players PBs
 
 ### Configuration
 
-* To add map Start, Respawn and End Areas head over to `game/csgo/cfg/SharpTimer/mapdata.json`
+* To add Map Start and End zones you can simply add the `targetnames` of the triggers in the `mapdata.json` inside of `game/csgo/cfg/SharpTimer/` using `MapStartTrigger` and  `MapEndTrigger`
 
-  Add the coordinates of opposite corners for each of the Start and End Areas using `MapStartC1`, `MapStartC2` & `MapEndC1`, `MapEndC2`
 
-  After that set the `RespawnPos` to the coordinates you with the player will get teleported to once they use `!r`
+  Many maps do not contain any `startzone` or `endzone` triggers. As a workaround you can setup the trigger manually be defining its opposite corner coordinates with `MapStartC1` and `MapStartC2`
 
-  To get the coordinates you can use either the console command `cl_showpos 1` or `getpos` to get the coordinates of where your player currently is.
+  You also need to define the `RespawnPos` for the `!r` command using `RespawmPos`
+
+  Here is a Example of what the `mapdata.json` can look like with both map triggers and manual triggers:
 
   
 ```
 {
   "surf_kitsune": {
-    "MapStartC1": "-15744 -15343 816",
-    "MapStartC2": "-14974 -14832 816",
-    "MapEndC1": "-15540 10560 -11807",
-    "MapEndC2": "-16047 9793 -11807",
+    "MapStartTrigger": "stage1_start",
+    "MapEndTrigger": "stage9_end",
     "RespawnPos": "-15360 -15068 817"
   },
-  "surf_someothermap": {
-    "MapStartC1": "-15744 -15343 816",
-    "MapStartC2": "-14974 -14832 816",
-    "MapEndC1": "-15540 10560 -11807",
-    "MapEndC2": "-16047 9793 -11807",
-    "RespawnPos": "-15360 -15068 817"
-  }
+  "surf_beginner": {
+    "MapStartTrigger": "stage1_trigger",
+    "MapEndTrigger": "end_trigger",
+    "RespawnPos": "-128 -16 384"
+  },
+  "surf_boomer": {
+    "MapStartTrigger": "zippan_start",
+    "MapEndTrigger": "zippan_end",
+    "RespawnPos": "-12352 -384 14656"
+  },
+  "surf_mesa_revo": {
+    "MapStartC1": "255.63 -1360 8928",
+    "MapStartC2": "-259.002686 -832 8928",
+    "MapEndC1": "-393 14047 -13759",
+    "MapEndC2": "378.517792 13067.639648 -13759",
+    "RespawnPos": "-64 -1040 8992"
+  },
+  "surf_utopia_njv": {
+    "MapStartC1": "-13769 512 12800",
+    "MapStartC2": "-14319 -512 12800",
+    "MapEndC1": "-13825 -512 -6223",
+    "MapEndC2": "-14319 527 -6223",
+    "RespawnPos": "-13904 336 12864"
+  },
 }
 ```
 * I will try to add more map data by default in the future :) pull requests are also welcome
