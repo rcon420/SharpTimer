@@ -10,7 +10,7 @@ CounterStrikeSharp: https://docs.cssharp.dev/
 ## Features
 Timer, Speedometer and Keys
 
-![alt text](https://i.imgur.com/v6zmECN.png)
+![alt text](https://i.imgur.com/Y2BGvwd.png)
 
 Players PBs
 
@@ -36,7 +36,7 @@ Players PBs
 * To add Map Start and End zones you can simply add the `targetnames` of the triggers in the `mapdata.json` inside of `game/csgo/cfg/SharpTimer/` using `MapStartTrigger` and  `MapEndTrigger`
 
 
-  Many maps do not contain any `startzone` or `endzone` triggers. As a workaround you can setup the trigger manually be defining its opposite corner coordinates with `MapStartC1` and `MapStartC2`
+  Many maps do not contain any `startzone` or `endzone` triggers. As a workaround you can setup the trigger manually be defining its opposite corner coordinates with `MapStartC1` and `MapStartC2`! if you are using the `getpos` or `cl_showpos 1` to get the coordinates you will have to subtract `64 units` from the Z axis since the coordinates given are at the height of your camera and not your feet!
 
   You also need to define the `RespawnPos` for the `!r` command using `RespawmPos`
 
