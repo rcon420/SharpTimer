@@ -55,6 +55,7 @@ namespace SharpTimer
 
         public bool useTriggers = true;
         public bool respawnEnabled = true;
+        public bool topEnabled = true;
 
         public string beepSound = "sounds/ui/csgo_ui_button_rollover_large.vsnd";
 
