@@ -1,18 +1,15 @@
 {
   "surf_kitsune": {
     "MapStartTrigger": "stage1_start",
-    "MapEndTrigger": "stage9_end",
-    "RespawnPos": "-15360 -15068 817"
+    "MapEndTrigger": "stage9_end"
   },
   "surf_beginner": {
     "MapStartTrigger": "stage1_trigger",
-    "MapEndTrigger": "end_trigger",
-    "RespawnPos": "-128 -16 384"
+    "MapEndTrigger": "end_trigger"
   },
   "surf_boomer": {
     "MapStartTrigger": "zippan_start",
-    "MapEndTrigger": "zippan_end",
-    "RespawnPos": "-12352 -384 14656"
+    "MapEndTrigger": "zippan_end"
   },
   "surf_mesa_revo": {
     "MapStartC1": "255.63 -1360 8928",

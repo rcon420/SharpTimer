@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
+using Microsoft.VisualBasic;
 using System.Text.Json;
 using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
 
@@ -53,6 +54,7 @@ namespace SharpTimer
         public Vector currentRespawnPos = new Vector(0, 0, 0);
 
         public bool useTriggers = true;
+        public bool noMapData = false;
 
         public string beepSound = "sounds/ui/csgo_ui_button_rollover_large.vsnd";
 
@@ -111,16 +113,16 @@ namespace SharpTimer
                     if (player.IsValid && !player.IsBot && player.PawnIsAlive)
                     {
                         var buttons = player.Buttons;
-                        string playerVel = Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()).ToString().PadLeft(3, '0');
+                        var playerVelV = player.PlayerPawn.Value.AbsVelocity;
+                        float playerVel = (float)Math.Sqrt(playerVelV.X * playerVelV.X + playerVelV.Y * playerVelV.Y + playerVelV.Z * playerVelV.Z);
+                        string formattedPlayerVel = Math.Round(playerVel).ToString().PadLeft(4, '0');
                         string playerTime = FormatTime(playerTimers[player.UserId ?? 0].TimerTicks);
-
-                        
 
                         if (playerTimers[player.UserId ?? 0].IsTimerRunning)
                         {
                             player.PrintToCenterHtml(
                                 $"<font color='gray'>{GetPlayerPlacement(player)}</font> <font class='fontSize-l' color='green'>{playerTime}</font><br>" +
-                                $"<font color='white'>Speed:</font> <font color='orange'>{playerVel}</font><br>" +
+                                $"<font color='white'>Speed:</font> <font color='orange'>{formattedPlayerVel}</font><br>" +
                                 $"<font class='fontSize-s' color='gray'>{playerTimers[player.UserId ?? 0].TimerRank}</font><br>" +
                                 $"<font color='white'>{((buttons & PlayerButtons.Forward) != 0 ? "W" : "_")} " +
                                 $"{((buttons & PlayerButtons.Moveleft) != 0 ? "A" : "_")} " +
@@ -134,7 +136,7 @@ namespace SharpTimer
                         else
                         {
                             player.PrintToCenterHtml(
-                                $"<font color='white'>Speed:</font> <font color='orange'>{playerVel}</font><br>" +
+                                $"<font color='white'>Speed:</font> <font color='orange'>{formattedPlayerVel}</font><br>" +
                                 $"<font class='fontSize-s' color='gray'>{playerTimers[player.UserId ?? 0].TimerRank}</font><br>" +
                                 $"<font color='white'>{((buttons & PlayerButtons.Forward) != 0 ? "W" : "_")} " +
                                 $"{((buttons & PlayerButtons.Moveleft) != 0 ? "A" : "_")} " +
@@ -144,7 +146,7 @@ namespace SharpTimer
                                 $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}</font>");
                         }
 
-                        if(!useTriggers)
+                        if (!useTriggers)
                         {
                             CheckPlayerActions(player);
                         }
@@ -163,12 +165,12 @@ namespace SharpTimer
 
                 if (!connectedPlayers.Contains(player)) return HookResult.Continue;
 
-                if(trigger.Entity.Name == currentMapEndTrigger && player.IsValid )
+                if (trigger.Entity.Name == currentMapEndTrigger && player.IsValid)
                 {
                     OnTimerStop(player);
                     return HookResult.Continue;
                 }
-                
+
                 return HookResult.Continue;
             }, HookMode.Post);
 
@@ -183,12 +185,12 @@ namespace SharpTimer
 
                 if (!connectedPlayers.Contains(player)) return HookResult.Continue;
 
-                if(trigger.Entity.Name == currentMapStartTrigger && player.IsValid )
+                if (trigger.Entity.Name == currentMapStartTrigger && player.IsValid)
                 {
                     OnTimerStart(player);
                     return HookResult.Continue;
                 }
-                
+
                 return HookResult.Continue;
             }, HookMode.Post);
 
@@ -468,6 +470,20 @@ namespace SharpTimer
             return new Vector(0, 0, 0);
         }
 
+        private Vector FindStartTriggerPos()
+        {
+            var triggers = Utilities.FindAllEntitiesByDesignerName<CBaseTrigger>("trigger_multiple");
+
+            foreach (var trigger in triggers)
+            {
+                if (trigger.Entity.Name == currentMapStartTrigger)
+                {
+                    return trigger.CBodyComponent?.SceneNode?.AbsOrigin;
+                }
+            }
+            return new Vector(0, 0, 0);
+        }
+
         [ConsoleCommand("css_top", "Prints top players of this map")]
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void PrintTopRecords(CCSPlayerController? player, CommandInfo command)
@@ -480,7 +496,7 @@ namespace SharpTimer
 
             if (sortedRecords.Count == 0)
             {
-                player.PrintToChat(msgPrefix +$" No records available for {currentMapName}.");
+                player.PrintToChat(msgPrefix + $" No records available for {currentMapName}.");
                 return;
             }
 
@@ -500,7 +516,15 @@ namespace SharpTimer
         public void RespawnPlayer(CCSPlayerController? player, CommandInfo command)
         {
             if (player == null) return;
-            player.PlayerPawn.Value.Teleport(currentRespawnPos, new QAngle(0, 90, 0), new Vector(0, 0, 0));
+
+            if(useTriggers == true)
+            {
+                player.PlayerPawn.Value.Teleport(FindStartTriggerPos(), new QAngle(0, 90, 0), new Vector(0, 0, 0));
+            }
+            else
+            {
+                player.PlayerPawn.Value.Teleport(currentRespawnPos, new QAngle(0, 90, 0), new Vector(0, 0, 0));
+            }        
             playerTimers[player.UserId ?? 0].IsTimerRunning = false;
             playerTimers[player.UserId ?? 0].TimerTicks = 0;
             NativeAPI.IssueClientCommand((int)player.EntityIndex!.Value.Value - 1, $"play {beepSound}");
