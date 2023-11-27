@@ -1,23 +1,17 @@
 {
   "surf_kitsune": {
-    "MapStartC1": "-15744 -15343 816",
-    "MapStartC2": "-14974 -14832 816",
-    "MapEndC1": "-15540 10560 -11807",
-    "MapEndC2": "-16047 9793 -11807",
+    "MapStartTrigger": "stage1_start",
+    "MapEndTrigger": "stage9_end",
     "RespawnPos": "-15360 -15068 817"
   },
   "surf_beginner": {
-    "MapStartC1": "-448.150726 -47.964149 320",
-    "MapStartC2": "191.463989 257.725311 320",
-    "MapEndC1": "-4544.320312 4868.677734 3096",
-    "MapEndC2": "-6078.667480 5248.378418 3096",
+    "MapStartTrigger": "stage1_trigger",
+    "MapEndTrigger": "end_trigger",
     "RespawnPos": "-128 -16 384"
   },
   "surf_boomer": {
-    "MapStartC1": "-12783 816 14592",
-    "MapStartC2": "-12098 -816 14592",
-    "MapEndC1": "3344 12159 -11776",
-    "MapEndC2": "3839 11136 -11776",
+    "MapStartTrigger": "zippan_start",
+    "MapEndTrigger": "zippan_end",
     "RespawnPos": "-12352 -384 14656"
   },
   "surf_mesa_revo": {
@@ -27,18 +21,74 @@
     "MapEndC2": "378.517792 13067.639648 -13759",
     "RespawnPos": "-64 -1040 8992"
   },
-  "surf_rebel_resistance_cs2": {
-    "MapStartC1": "-860.968750 -14706.968750 14796",
-    "MapStartC2": "831.582947 -14100.968750 14796",
-    "MapEndC1": "-8342 5027 -4852",
-    "MapEndC2": "-7463.280762 4069 -4852",
-    "RespawnPos": "426 -14373 14860"
-  },
   "surf_utopia_njv": {
     "MapStartC1": "-13769 512 12800",
     "MapStartC2": "-14319 -512 12800",
     "MapEndC1": "-13825 -512 -6223",
     "MapEndC2": "-14319 527 -6223",
     "RespawnPos": "-13904 336 12864"
+  },
+  "bhop_at_night": {
+    "MapStartC1": "-686.97 -272.03 93.00",
+    "MapStartC2": "-208.03 -431.97 93.00",
+    "MapEndC1": "1906.61 -392.28 -482.00",
+    "MapEndC2": "1809.61 133.09 -482.00",
+    "RespawnPos": "-579.00 -423.00 93.00"
+  },
+  "bhop_asiimov": {
+    "MapStartC1": "-4100.56 2555.71 -194.97",
+    "MapStartC2": "-3843.77 2880.24 -194.97",
+    "MapEndC1": "8883.71 466.93 -330.97",
+    "MapEndC2": "9165.97 1521.97 -330.97",
+    "RespawnPos": "-3980.50 2725.00 -194.97"
+  },
+  "bhop_ragnarok": {
+    "MapStartC1": "16.03 528.03 -2.97",
+    "MapStartC2": "509.73 1007.97 -2.97",
+    "MapEndC1": "-495.97 528.03 253.03",
+    "MapEndC2": "-116.41 1007.97 253.03",
+    "RespawnPos": "274.23 781.31 -2.97"
+  },
+  "bhop_zunron": {
+    "MapStartC1": "-495.97 -495.97 125.03",
+    "MapStartC2": "-16.03 -257.79 125.03",
+    "MapEndC1": "-431.97 -561.01 445.03",
+    "MapEndC2": "-80.03 950.23 445.03",
+    "RespawnPos": "-295.09 -461.88 125.03"
+  },
+  "bhop_1derland": {
+    "MapStartC1": "190.59 -1706 101.03",
+    "MapStartC2": "-143.25 -1636.08 101.03",
+    "MapEndC1": "992.03 6244.33 29.03",
+    "MapEndC2": "1279.97 6043.67 -482.00",
+    "RespawnPos": "21.30 -1705.76 101.03"
+  },
+  "bhop_whiteshit": {
+    "MapStartC1": "192.17 254.14 29.03",
+    "MapStartC2": "435.87 -112.91 29.03",
+    "MapEndC1": "9219.08 -2301.21 -626.97",
+    "MapEndC2": "8893.97 -2625.16 -559.97",
+    "RespawnPos": "276.71 64.34 29.03"
+  },
+  "bhop_cherryblossom": {
+    "MapStartC1": "1612.03 319.97 45.03",
+    "MapStartC2": "2043.97 -162.54 45.03",
+    "MapEndC1": "3932.03 -8616.12 45.03",
+    "MapEndC2": "4371.97 -8146.30 45.03",
+    "RespawnPos": "1841.17 93.93 45.03"
+  },
+  "bhop_arcturus": {
+    "MapStartC1": "1167.97 12111.97 -3634.97",
+    "MapStartC2": "688.03 11743.89 3634.97",
+    "MapEndC1": "9232.03 -14266.97 -14935.97",
+    "MapEndC2": "11014.14 -11755.03 -14935.97",
+    "RespawnPos": "926.1 11931.92 3634.97"
+  },
+  "bhop_kiwi_cwfx": {
+    "MapStartC1": "-6671.97 -2673.28 -4209.47",
+    "MapStartC2": "-6271.90 -3169.22 -4209.47",
+    "MapEndC1": "4143.97 -2095.97 141.03",
+    "MapEndC2": "3876.42 -1760.03 141.03",
+    "RespawnPos": "-6485.49 -2924.37 -4209.47"
   }
 }

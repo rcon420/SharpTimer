@@ -2,6 +2,7 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Text.Json;
 using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
@@ -10,22 +11,25 @@ namespace SharpTimer
 {
     public class MapInfo
     {
-        public string MapStartC1 { get; set; }
-        public string MapStartC2 { get; set; }
-        public string MapEndC1 { get; set; }
-        public string MapEndC2 { get; set; }
-        public string RespawnPos { get; set; }
+        public string? MapStartTrigger { get; set; }
+        public string? MapStartC1 { get; set; }
+        public string? MapStartC2 { get; set; }
+        public string? MapEndTrigger { get; set; }
+        public string? MapEndC1 { get; set; }
+        public string? MapEndC2 { get; set; }
+        public string? RespawnPos { get; set; }
     }
 
     public class PlayerTimerInfo
     {
         public bool IsTimerRunning { get; set; }
         public int TimerTicks { get; set; }
+        public string? TimerRank { get; set; }
     }
 
     public class PlayerRecord
     {
-        public string PlayerName { get; set; }
+        public string? PlayerName { get; set; }
         public int TimerTicks { get; set; }
     }
 
@@ -40,13 +44,17 @@ namespace SharpTimer
         public override string ModuleDescription => "A simple CSS Timer Plugin";
 
         public string msgPrefix = $" {ChatColors.Green} [SharpTimer] {ChatColors.White}";
+        public string currentMapStartTrigger = "trigger_startzone";
+        public string currentMapEndTrigger = "trigger_endzone";
         public Vector currentMapStartC1 = new Vector(0, 0, 0);
         public Vector currentMapStartC2 = new Vector(0, 0, 0);
         public Vector currentMapEndC1 = new Vector(0, 0, 0);
         public Vector currentMapEndC2 = new Vector(0, 0, 0);
         public Vector currentRespawnPos = new Vector(0, 0, 0);
 
-        public bool configLoaded = false;
+        public bool useTriggers = true;
+
+        public string beepSound = "sounds/ui/csgo_ui_button_rollover_large.vsnd";
 
         public override void Load(bool hotReload)
         {
@@ -62,8 +70,11 @@ namespace SharpTimer
                 {
                     connectedPlayers.Add(player);
                     playerTimers[player.UserId ?? 0] = new PlayerTimerInfo();
+
                     Server.PrintToChatAll($"{msgPrefix}Player {ChatColors.Red}{player.PlayerName} {ChatColors.White}connected!");
                     player.PrintToChat($"{msgPrefix}Welcome {ChatColors.Red}{player.PlayerName} {ChatColors.White}to the server!");
+
+                    playerTimers[player.UserId ?? 0].TimerRank = GetPlayerPlacementWithTotal(player);
 
                     return HookResult.Continue;
                 }
@@ -103,25 +114,83 @@ namespace SharpTimer
                         string playerVel = Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()).ToString().PadLeft(3, '0');
                         string playerTime = FormatTime(playerTimers[player.UserId ?? 0].TimerTicks);
 
-                        player.PrintToCenterHtml(
-                            $"<font color='white'>{GetPlayerPlacement(player)}</font> <font class='fontSize-l' color='green'>{playerTime}</font><br>" +
-                            $"<font color=\"white\">Speed:</font> <font color='orange'>{playerVel}</font><br>" +
-                            $"{((buttons & PlayerButtons.Forward) != 0 ? "W" : "_")} " +
-                            $"{((buttons & PlayerButtons.Moveleft) != 0 ? "A" : "_")} " +
-                            $"{((buttons & PlayerButtons.Back) != 0 ? "S" : "_")} " +
-                            $"{((buttons & PlayerButtons.Moveright) != 0 ? "D" : "_")} " +
-                            $"{((buttons & PlayerButtons.Jump) != 0 ? "J" : "_")} " +
-                            $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}</font>");
+                        
 
                         if (playerTimers[player.UserId ?? 0].IsTimerRunning)
                         {
+                            player.PrintToCenterHtml(
+                                $"<font color='gray'>{GetPlayerPlacement(player)}</font> <font class='fontSize-l' color='green'>{playerTime}</font><br>" +
+                                $"<font color='white'>Speed:</font> <font color='orange'>{playerVel}</font><br>" +
+                                $"<font class='fontSize-s' color='gray'>{playerTimers[player.UserId ?? 0].TimerRank}</font><br>" +
+                                $"<font color='white'>{((buttons & PlayerButtons.Forward) != 0 ? "W" : "_")} " +
+                                $"{((buttons & PlayerButtons.Moveleft) != 0 ? "A" : "_")} " +
+                                $"{((buttons & PlayerButtons.Back) != 0 ? "S" : "_")} " +
+                                $"{((buttons & PlayerButtons.Moveright) != 0 ? "D" : "_")} " +
+                                $"{((buttons & PlayerButtons.Jump) != 0 ? "J" : "_")} " +
+                                $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}</font>");
+
                             playerTimers[player.UserId ?? 0].TimerTicks++;
                         }
+                        else
+                        {
+                            player.PrintToCenterHtml(
+                                $"<font color='white'>Speed:</font> <font color='orange'>{playerVel}</font><br>" +
+                                $"<font class='fontSize-s' color='gray'>{playerTimers[player.UserId ?? 0].TimerRank}</font><br>" +
+                                $"<font color='white'>{((buttons & PlayerButtons.Forward) != 0 ? "W" : "_")} " +
+                                $"{((buttons & PlayerButtons.Moveleft) != 0 ? "A" : "_")} " +
+                                $"{((buttons & PlayerButtons.Back) != 0 ? "S" : "_")} " +
+                                $"{((buttons & PlayerButtons.Moveright) != 0 ? "D" : "_")} " +
+                                $"{((buttons & PlayerButtons.Jump) != 0 ? "J" : "_")} " +
+                                $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}</font>");
+                        }
 
-                        CheckPlayerActions(player);
+                        if(!useTriggers)
+                        {
+                            CheckPlayerActions(player);
+                        }
                     }
                 }
             });
+
+            VirtualFunctions.CBaseTrigger_StartTouchFunc.Hook(h =>
+            {
+                var trigger = h.GetParam<CBaseTrigger>(0);
+                var entity = h.GetParam<CBaseEntity>(1);
+
+                if (trigger.DesignerName != "trigger_multiple" || entity.DesignerName != "player" || useTriggers == false) return HookResult.Continue;
+
+                var player = new CCSPlayerController(new CCSPlayerPawn(entity.Handle).Controller.Value.Handle);
+
+                if (!connectedPlayers.Contains(player)) return HookResult.Continue;
+
+                if(trigger.Entity.Name == currentMapEndTrigger && player.IsValid )
+                {
+                    OnTimerStop(player);
+                    return HookResult.Continue;
+                }
+                
+                return HookResult.Continue;
+            }, HookMode.Post);
+
+            VirtualFunctions.CBaseTrigger_EndTouchFunc.Hook(h =>
+            {
+                var trigger = h.GetParam<CBaseTrigger>(0);
+                var entity = h.GetParam<CBaseEntity>(1);
+
+                if (trigger.DesignerName != "trigger_multiple" || entity.DesignerName != "player" || useTriggers == false) return HookResult.Continue;
+
+                var player = new CCSPlayerController(new CCSPlayerPawn(entity.Handle).Controller.Value.Handle);
+
+                if (!connectedPlayers.Contains(player)) return HookResult.Continue;
+
+                if(trigger.Entity.Name == currentMapStartTrigger && player.IsValid )
+                {
+                    OnTimerStart(player);
+                    return HookResult.Continue;
+                }
+                
+                return HookResult.Continue;
+            }, HookMode.Post);
 
             Console.WriteLine("[SharpTimer] Plugin Loaded");
         }
@@ -168,7 +237,7 @@ namespace SharpTimer
 
         public void OnTimerStart(CCSPlayerController? player)
         {
-            if (player == null) return;
+            if (player == null || !player.IsValid) return;
 
             playerTimers[player.UserId ?? 0].IsTimerRunning = true;
             playerTimers[player.UserId ?? 0].TimerTicks = 0;
@@ -216,12 +285,67 @@ namespace SharpTimer
 
         public void OnTimerStop(CCSPlayerController? player)
         {
-            if (player == null || playerTimers[player.UserId ?? 0].IsTimerRunning == false) return;
+            if (player == null || playerTimers[player.UserId ?? 0].IsTimerRunning == false || !player.IsValid) return;
+
+            int currentTicks = playerTimers[player.UserId ?? 0].TimerTicks;
+            int previousRecordTicks = GetPreviousPlayerRecord(player);
 
             SavePlayerTime(player);
 
-            Server.PrintToChatAll(msgPrefix + $"{ChatColors.Red}{player.PlayerName} just finished the map in: {ChatColors.Green}[{FormatTime(playerTimers[player.UserId ?? 0].TimerTicks)}]!");
+            string timeDifference = FormatTimeDifference(currentTicks, previousRecordTicks);
+
+            if (currentTicks < previousRecordTicks)
+            {
+                Server.PrintToChatAll(msgPrefix + $"{ChatColors.Green}{player.PlayerName} {ChatColors.White}just finished the map in: {ChatColors.Green}[{FormatTime(currentTicks)}]! {timeDifference}");
+            }
+            else if (currentTicks > previousRecordTicks)
+            {
+                Server.PrintToChatAll(msgPrefix + $"{ChatColors.Green}{player.PlayerName} {ChatColors.White}just finished the map in: {ChatColors.Red}[{FormatTime(currentTicks)}]! {timeDifference}");
+            }
+            else
+            {
+                Server.PrintToChatAll(msgPrefix + $"{ChatColors.Green}{player.PlayerName} {ChatColors.White}just finished the map in: {ChatColors.Yellow}[{FormatTime(currentTicks)}]! (No change in time)");
+            }
+
             playerTimers[player.UserId ?? 0].IsTimerRunning = false;
+            playerTimers[player.UserId ?? 0].TimerRank = GetPlayerPlacementWithTotal(player);
+            NativeAPI.IssueClientCommand((int)player.EntityIndex!.Value.Value - 1, $"play {beepSound}");
+        }
+
+        private int GetPreviousPlayerRecord(CCSPlayerController? player)
+        {
+            if (player == null) return int.MaxValue; // Return a large value if no previous record is found
+
+            string currentMapName = Server.MapName;
+            string steamId = player.SteamID.ToString();
+
+            string recordsFileName = "SharpTimer/player_records.json";
+            string recordsPath = Path.Join(Server.GameDirectory + "/csgo/cfg", recordsFileName);
+
+            Dictionary<string, Dictionary<string, PlayerRecord>> records;
+            if (File.Exists(recordsPath))
+            {
+                string json = File.ReadAllText(recordsPath);
+                records = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, PlayerRecord>>>(json) ?? new Dictionary<string, Dictionary<string, PlayerRecord>>();
+
+                if (records.ContainsKey(currentMapName) && records[currentMapName].ContainsKey(steamId))
+                {
+                    return records[currentMapName][steamId].TimerTicks;
+                }
+            }
+
+            return int.MaxValue; // Return a large value if no previous record is found
+        }
+
+        private string FormatTimeDifference(int currentTicks, int previousTicks)
+        {
+            int differenceTicks = previousTicks - currentTicks;
+            string sign = (differenceTicks > 0) ? "-" : "+";
+
+            TimeSpan timeDifference = TimeSpan.FromSeconds(Math.Abs(differenceTicks) / 64.0);
+            int centiseconds = (int)((Math.Abs(differenceTicks) % 64) * (100.0 / 64.0));
+
+            return $"{sign}{timeDifference.Minutes:D1}:{timeDifference.Seconds:D2}.{centiseconds:D2}";
         }
 
         public Dictionary<string, int> GetSortedRecords()
@@ -277,6 +401,36 @@ namespace SharpTimer
 
             return "#" + placement;
         }
+
+        public string GetPlayerPlacementWithTotal(CCSPlayerController? player)
+        {
+            if (player == null || !playerTimers.ContainsKey(player.UserId ?? 0))
+            {
+                return "Unranked";
+            }
+
+            Dictionary<string, int> sortedRecords = GetSortedRecords();
+
+            int currentPlayerTime = playerTimers[player.UserId ?? 0].TimerTicks;
+
+            int placement = 1;
+            int totalPlayers = sortedRecords.Count;
+
+            foreach (var record in sortedRecords)
+            {
+                if (currentPlayerTime > record.Value)
+                {
+                    placement++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return $"Rank: {placement}/{totalPlayers}";
+        }
+
 
         private string GetPlayerNameFromSavedSteamID(string steamId)
         {
@@ -346,7 +500,10 @@ namespace SharpTimer
         public void RespawnPlayer(CCSPlayerController? player, CommandInfo command)
         {
             if (player == null) return;
-            player.PlayerPawn.Value.Teleport(currentRespawnPos, new QAngle(0, 0, 0), new Vector(0, 0, 0));
+            player.PlayerPawn.Value.Teleport(currentRespawnPos, new QAngle(0, 90, 0), new Vector(0, 0, 0));
+            playerTimers[player.UserId ?? 0].IsTimerRunning = false;
+            playerTimers[player.UserId ?? 0].TimerTicks = 0;
+            NativeAPI.IssueClientCommand((int)player.EntityIndex!.Value.Value - 1, $"play {beepSound}");
         }
 
         private void LoadConfig()
@@ -365,11 +522,35 @@ namespace SharpTimer
 
                 if (mapData.TryGetValue(currentMapName, out var mapInfo))
                 {
-                    currentMapStartC1 = ParseVector(mapInfo.MapStartC1);
-                    currentMapStartC2 = ParseVector(mapInfo.MapStartC2);
-                    currentMapEndC1 = ParseVector(mapInfo.MapEndC1);
-                    currentMapEndC2 = ParseVector(mapInfo.MapEndC2);
+                    currentMapStartTrigger = mapInfo.MapStartTrigger;
+
+                    // Check if MapStartC1 and MapStartC2 are not null or empty before parsing
+                    if (!string.IsNullOrEmpty(mapInfo.MapStartC1) && !string.IsNullOrEmpty(mapInfo.MapStartC2))
+                    {
+                        currentMapStartC1 = ParseVector(mapInfo.MapStartC1);
+                        currentMapStartC2 = ParseVector(mapInfo.MapStartC2);
+                    }
+
+                    currentMapEndTrigger = mapInfo.MapEndTrigger;
+
+                    // Check if MapEndC1 and MapEndC2 are not null or empty before parsing
+                    if (!string.IsNullOrEmpty(mapInfo.MapEndC1) && !string.IsNullOrEmpty(mapInfo.MapEndC2))
+                    {
+                        currentMapEndC1 = ParseVector(mapInfo.MapEndC1);
+                        currentMapEndC2 = ParseVector(mapInfo.MapEndC2);
+                    }
+
                     currentRespawnPos = ParseVector(mapInfo.RespawnPos);
+
+                    // Check if either MapStartTrigger or MapEndTrigger is null or empty
+                    if (string.IsNullOrEmpty(currentMapStartTrigger) || string.IsNullOrEmpty(currentMapEndTrigger))
+                    {
+                        useTriggers = false;
+                    }
+                    else
+                    {
+                        useTriggers = true;
+                    }
                 }
             }
         }
