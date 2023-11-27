@@ -11,6 +11,18 @@
     "MapStartTrigger": "zippan_start",
     "MapEndTrigger": "zippan_end"
   },
+  "surf_ace": {
+    "MapStartTrigger": "1z",
+    "MapEndTrigger": "endm"
+  },
+  "surf_rookie": {
+    "MapStartTrigger": "stage1_trigger ",
+    "MapEndTrigger": "end_trigger"
+  },
+  "surf_deathstar": {
+    "MapStartTrigger": "map_start",
+    "MapEndTrigger": "map_end"
+  },
   "surf_mesa_revo": {
     "MapStartC1": "255.63 -1360 8928",
     "MapStartC2": "-259.002686 -832 8928",
