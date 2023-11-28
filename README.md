@@ -3,11 +3,11 @@ SharpTimer is a simple Surf/KZ/Bhop/MG/Deathrun/etc. CS2 Timer plugin using Coun
 
 ### Dependencies
 
-**MetaMod:** https://cs2.poggu.me/metamod/installation/
+[**MetaMod**](https://cs2.poggu.me/metamod/installation/)
 
-**CounterStrikeSharp:** https://docs.cssharp.dev/
+[**CounterStrikeSharp**](https://github.com/roflmuffin/CounterStrikeSharp/releases)
 
-**MovementUnlocker** *(optional)*: https://github.com/Source2ZE/MovementUnlocker
+[**MovementUnlocker** *(optional)*](https://github.com/Source2ZE/MovementUnlocker)
 
 ## Features
 <p align="center">
