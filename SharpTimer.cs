@@ -254,6 +254,12 @@ namespace SharpTimer
         public void OnTimerStart(CCSPlayerController? player)
         {
             if (player == null || !player.IsValid) return;
+            
+            // Remove checkpoints for the current player
+            if (playerCheckpoints.ContainsKey(player.UserId ?? 0))
+            {
+                playerCheckpoints.Remove(player.UserId ?? 0);
+            }
 
             playerTimers[player.UserId ?? 0].IsTimerRunning = true;
             playerTimers[player.UserId ?? 0].TimerTicks = 0;
