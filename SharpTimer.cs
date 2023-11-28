@@ -309,9 +309,11 @@ namespace SharpTimer
             playerTimers[player.UserId ?? 0].IsTimerRunning = false;
 
             string timeDifference = "";
+            char ifFirstTimeColor = ChatColors.Red;
             if (previousRecordTicks != 0)
             {
                 timeDifference = FormatTimeDifference(currentTicks, previousRecordTicks);
+                ifFirstTimeColor = ChatColors.Yellow;
             }
 
             if (currentTicks < previousRecordTicks)
@@ -320,7 +322,7 @@ namespace SharpTimer
             }
             else if (currentTicks > previousRecordTicks)
             {
-                Server.PrintToChatAll(msgPrefix + $"{ChatColors.Green}{player.PlayerName} {ChatColors.White}just finished the map in: {ChatColors.Red}[{FormatTime(currentTicks)}]! {timeDifference}");
+                Server.PrintToChatAll(msgPrefix + $"{ChatColors.Green}{player.PlayerName} {ChatColors.White}just finished the map in: {ifFirstTimeColor}[{FormatTime(currentTicks)}]! {timeDifference}");
             }
             else
             {
@@ -332,7 +334,7 @@ namespace SharpTimer
             NativeAPI.IssueClientCommand((int)player.EntityIndex!.Value.Value - 1, $"play {beepSound}");
         }
 
-        private int GetPreviousPlayerRecord(CCSPlayerController? player)
+        private static int GetPreviousPlayerRecord(CCSPlayerController? player)
         {
             if (player == null) return 0;
 
@@ -426,7 +428,7 @@ namespace SharpTimer
         {
             if (player == null || !playerTimers.ContainsKey(player.UserId ?? 0))
             {
-                return "N/A";
+                return "Unranked";
             }
 
             string steamId = player.SteamID.ToString();
@@ -434,7 +436,7 @@ namespace SharpTimer
 
             if (savedPlayerTime == 0)
             {
-                return "N/A";
+                return "Unranked";
             }
 
             Dictionary<string, int> sortedRecords = GetSortedRecords();
@@ -572,7 +574,7 @@ namespace SharpTimer
         {
             if (player == null || rankEnabled == false) return;
 
-            player.PrintToChat(msgPrefix + $" {GetPlayerPlacementWithTotal(player)}");
+            player.PrintToChat(msgPrefix + $" You are currently {ChatColors.Green}{GetPlayerPlacementWithTotal(player)}");
         }
 
         [ConsoleCommand("css_r", "Teleports you to start")]
