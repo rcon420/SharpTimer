@@ -257,9 +257,10 @@ namespace SharpTimer
             playerTimers[player.UserId ?? 0].TimerTicks = 0;
         }
 
-        public void SavePlayerTime(CCSPlayerController? player)
+        public void SavePlayerTime(CCSPlayerController? player, int timerTicks)
         {
             if (player == null) return;
+            if (playerTimers[player.UserId ?? 0].IsTimerRunning == false) return;
 
             string currentMapName = Server.MapName;
             string steamId = player.SteamID.ToString();
@@ -304,7 +305,8 @@ namespace SharpTimer
             int currentTicks = playerTimers[player.UserId ?? 0].TimerTicks;
             int previousRecordTicks = GetPreviousPlayerRecord(player);
 
-            SavePlayerTime(player);
+            SavePlayerTime(player, playerTimers[player.UserId ?? 0].TimerTicks);
+            playerTimers[player.UserId ?? 0].IsTimerRunning = false;
 
             string timeDifference = "";
             if (previousRecordTicks != 0)
@@ -325,7 +327,7 @@ namespace SharpTimer
                 Server.PrintToChatAll(msgPrefix + $"{ChatColors.Green}{player.PlayerName} {ChatColors.White}just finished the map in: {ChatColors.Yellow}[{FormatTime(currentTicks)}]! (No change in time)");
             }
 
-            playerTimers[player.UserId ?? 0].IsTimerRunning = false;
+            
             playerTimers[player.UserId ?? 0].TimerRank = GetPlayerPlacementWithTotal(player);
             NativeAPI.IssueClientCommand((int)player.EntityIndex!.Value.Value - 1, $"play {beepSound}");
         }
@@ -424,19 +426,24 @@ namespace SharpTimer
         {
             if (player == null || !playerTimers.ContainsKey(player.UserId ?? 0))
             {
-                return "Unranked";
+                return "N/A";
+            }
+
+            string steamId = player.SteamID.ToString();
+            int savedPlayerTime = GetPreviousPlayerRecord(player);
+
+            if (savedPlayerTime == 0)
+            {
+                return "N/A";
             }
 
             Dictionary<string, int> sortedRecords = GetSortedRecords();
 
-            int currentPlayerTime = playerTimers[player.UserId ?? 0].TimerTicks;
-
             int placement = 1;
-            int totalPlayers = sortedRecords.Count;
 
             foreach (var record in sortedRecords)
             {
-                if (currentPlayerTime > record.Value)
+                if (savedPlayerTime > record.Value)
                 {
                     placement++;
                 }
@@ -445,6 +452,8 @@ namespace SharpTimer
                     break;
                 }
             }
+
+            int totalPlayers = sortedRecords.Count + 1; // Including the current player
 
             return $"Rank: {placement}/{totalPlayers}";
         }
@@ -457,19 +466,35 @@ namespace SharpTimer
             string recordsFileName = "SharpTimer/player_records.json";
             string recordsPath = Path.Join(Server.GameDirectory + "/csgo/cfg", recordsFileName);
 
-            Dictionary<string, Dictionary<string, PlayerRecord>> records;
             if (File.Exists(recordsPath))
             {
-                string json = File.ReadAllText(recordsPath);
-                records = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, PlayerRecord>>>(json) ?? new Dictionary<string, Dictionary<string, PlayerRecord>>();
-
-                if (records.ContainsKey(currentMapName) && records[currentMapName].ContainsKey(steamId))
+                try
                 {
-                    return records[currentMapName][steamId].PlayerName;
+                    string json = File.ReadAllText(recordsPath);
+                    var records = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, PlayerRecord>>>(json);
+
+                    if (records != null && records.TryGetValue(currentMapName, out var mapRecords) && mapRecords.TryGetValue(steamId, out var playerRecord))
+                    {
+                        return playerRecord.PlayerName;
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    // Handle JSON deserialization errors
+                    Console.WriteLine($"Error deserializing player records: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    // Handle other exceptions
+                    Console.WriteLine($"Error reading player records: {ex.Message}");
                 }
             }
+            else
+            {
+                Console.WriteLine($"Player records file not found: {recordsPath}");
+            }
 
-            return "Unknown"; // Return a default name if the player name is not found
+            return "Unknown"; // Return a default name if the player name is not found or an error occurs
         }
 
         private Vector ParseVector(string vectorString)
