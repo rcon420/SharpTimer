@@ -221,14 +221,16 @@ namespace SharpTimer
         {
             if (player == null) return;
 
+            Vector incorrectVector = new Vector(0, 0, 0);
+
             Vector playerPos = player.Pawn.Value.CBodyComponent!.SceneNode.AbsOrigin;
 
-            if (IsVectorInsideBox(playerPos, currentMapStartC1, currentMapStartC2))
+            if (IsVectorInsideBox(playerPos, currentMapStartC1, currentMapStartC2) && currentMapStartC1 != incorrectVector && currentMapStartC2 != incorrectVector && currentMapEndC1 != incorrectVector && currentMapEndC2 != incorrectVector)
             {
                 OnTimerStart(player);
             }
 
-            if (IsVectorInsideBox(playerPos, currentMapEndC1, currentMapEndC2))
+            if (IsVectorInsideBox(playerPos, currentMapEndC1, currentMapEndC2) && currentMapStartC1 != incorrectVector && currentMapStartC2 != incorrectVector && currentMapEndC1 != incorrectVector && currentMapEndC2 != incorrectVector)
             {
                 OnTimerStop(player);
             }
@@ -581,7 +583,13 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void RespawnPlayer(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null || respawnEnabled == false) return;
+            if (player == null || respawnEnabled == false || currentRespawnPos == new Vector(0, 0, 0)) return;
+
+            if (currentRespawnPos == new Vector(0, 0, 0))
+            {
+                player.PrintToChat(msgPrefix + $" {ChatColors.LightRed} No RespawnPos found for current map!");
+                return;
+            } 
 
             // Remove checkpoints for the current player
             if (playerCheckpoints.ContainsKey(player.UserId ?? 0))
