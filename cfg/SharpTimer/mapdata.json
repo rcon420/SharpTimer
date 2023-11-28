@@ -41,6 +41,10 @@
     "MapStartTrigger": "timer_startzone",
     "MapEndTrigger": "timer_endzone"
   },
+  "kz_checkmate": {
+    "MapStartTrigger": "timer_startzone",
+    "MapEndTrigger": "timer_endzone"
+  },
   "bhop_at_night": {
     "MapStartC1": "-686.97 -272.03 93.00",
     "MapStartC2": "-208.03 -431.97 93.00",
