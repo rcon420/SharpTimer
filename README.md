@@ -3,31 +3,56 @@ SharpTimer is a simple Surf/KZ/Bhop/MG/Deathrun/etc. CS2 Timer plugin using Coun
 
 ### Dependencies
 
-MetaMod: https://cs2.poggu.me/metamod/installation/
+[**MetaMod**](https://cs2.poggu.me/metamod/installation/)
 
-CounterStrikeSharp: https://docs.cssharp.dev/
+[**CounterStrikeSharp**](https://github.com/roflmuffin/CounterStrikeSharp/releases)
+
+[**MovementUnlocker** *(optional)*](https://github.com/Source2ZE/MovementUnlocker)
 
 ## Features
-**Timer, Speedometer and Keys**
+<p align="center">
+<strong style="font-weight: bold;">----------------- [Timer, Speedometer and Keys] -----------------</strong>
+</p>
 
-![alt text](https://i.imgur.com/FQrIcuP.png)
+<p align="center">
+  <img src="https://i.imgur.com/cGUjH6m.png">
+</p>
+<br>
+<br>
+<br>
+<p align="center">
+<strong style="font-weight: bold;">-------------------------- [Players PBs] --------------------------</strong>
+</p>
 
-**Players PBs**
+<p align="center">
+  <img src="https://i.imgur.com/9HGOhRR.png">
+</p>
 
-![alt text](https://i.imgur.com/VDtLfU5.png)
+<p align="center">
+  <img src="https://i.imgur.com/amVXOHP.png">
+</p>
+<br>
+<br>
+<br>
+<p align="center">
+<strong style="font-weight: bold;">----------------- [Checkpoints (disabled by default)] -----------------</strong>
+</p>
 
-![alt text](https://i.imgur.com/2ld2iDW.png)
+<p align="center">
+  <img src="https://i.imgur.com/USX5i8C.png">
+</p>
 
-**Checkpoints** *(disabled by default)*
+<p align="center">
+  <img src="https://i.imgur.com/kWiHOlz.png">
+</p>
 
-![alt text](https://i.imgur.com/ryb5GQu.png)
+<p align="center">
+  <img src="https://i.imgur.com/lXwXNN7.png">
+</p>
 
-![alt text](https://i.imgur.com/fjO6ENc.png)
-
-![alt text](https://i.imgur.com/vaJXZ1M.png)
-
-![alt text](https://i.imgur.com/BDpKq4T.png)
-
+<p align="center">
+  <img src="https://i.imgur.com/nyn76Q4.png">
+</p>
 
 ### Installing
 
