@@ -331,7 +331,7 @@ namespace SharpTimer
                 Server.PrintToChatAll(msgPrefix + $"{ChatColors.Green}{player.PlayerName} {ChatColors.White}just finished the map in: {ChatColors.Yellow}[{FormatTime(currentTicks)}]! (No change in time)");
             }
 
-            
+
             playerTimers[player.UserId ?? 0].TimerRank = GetPlayerPlacementWithTotal(player);
             NativeAPI.IssueClientCommand((int)player.EntityIndex!.Value.Value - 1, $"play {beepSound}");
         }
@@ -589,7 +589,7 @@ namespace SharpTimer
             {
                 player.PrintToChat(msgPrefix + $" {ChatColors.LightRed} No RespawnPos found for current map!");
                 return;
-            } 
+            }
 
             // Remove checkpoints for the current player
             if (playerCheckpoints.ContainsKey(player.UserId ?? 0))
@@ -747,13 +747,20 @@ namespace SharpTimer
                         currentMapEndC2 = ParseVector(mapInfo.MapEndC2);
                         useTriggers = false;
                     }
-                    
-                    if(!string.IsNullOrEmpty(mapInfo.MapStartTrigger) && !string.IsNullOrEmpty(mapInfo.MapEndTrigger))
+
+                    if (!string.IsNullOrEmpty(mapInfo.MapStartTrigger) && !string.IsNullOrEmpty(mapInfo.MapEndTrigger))
                     {
                         currentMapStartTrigger = mapInfo.MapStartTrigger;
                         currentMapEndTrigger = mapInfo.MapEndTrigger;
                         useTriggers = true;
                     }
+                }
+                else
+                {
+                    Console.WriteLine($"Map data not found for map: {currentMapName}! Using default trigger names instead!");
+                    currentMapStartTrigger = "timer_startzone";
+                    currentMapEndTrigger = "timer_endzone";
+                    useTriggers = true;
                 }
             }
         }
