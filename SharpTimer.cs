@@ -4,7 +4,6 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
-using Microsoft.VisualBasic;
 using System.Text.Json;
 using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
 
@@ -34,16 +33,22 @@ namespace SharpTimer
         public int TimerTicks { get; set; }
     }
 
+    public class PlayerCheckpoint
+    {
+        public string? PositionString { get; set; }
+        public string? RotationString { get; set; }
+    }
+
     public partial class SharpTimer : BasePlugin
     {
         private Dictionary<int, PlayerTimerInfo> playerTimers = new Dictionary<int, PlayerTimerInfo>();
+        private Dictionary<int, List<PlayerCheckpoint>> playerCheckpoints = new Dictionary<int, List<PlayerCheckpoint>>();
         private List<CCSPlayerController> connectedPlayers = new List<CCSPlayerController>();
 
         public override string ModuleName => "SharpTimer";
         public override string ModuleVersion => "0.0.1";
         public override string ModuleAuthor => "DEAFPS https://github.com/DEAFPS/";
         public override string ModuleDescription => "A simple CSS Timer Plugin";
-
         public string msgPrefix = $" {ChatColors.Green} [SharpTimer] {ChatColors.White}";
         public string currentMapStartTrigger = "trigger_startzone";
         public string currentMapEndTrigger = "trigger_endzone";
@@ -57,8 +62,13 @@ namespace SharpTimer
         public bool respawnEnabled = true;
         public bool topEnabled = true;
         public bool rankEnabled = true;
+        public bool cpEnabled = true;
 
         public string beepSound = "sounds/ui/csgo_ui_button_rollover_large.vsnd";
+        public string respawnSound = "sounds/ui/menu_accept.vsnd";
+        public string cpSound = "sounds/ui/counter_beep.vsnd";
+        public string cpSoundAir = "sounds/ui/weapon_cant_buy.vsnd";
+        public string tpSound = "sounds/ui/buttonclick.vsnd";
 
         public override void Load(bool hotReload)
         {
@@ -296,7 +306,11 @@ namespace SharpTimer
 
             SavePlayerTime(player);
 
-            string timeDifference = FormatTimeDifference(currentTicks, previousRecordTicks);
+            string timeDifference = "";
+            if (previousRecordTicks != 0)
+            {
+                timeDifference = FormatTimeDifference(currentTicks, previousRecordTicks);
+            }
 
             if (currentTicks < previousRecordTicks)
             {
@@ -318,7 +332,7 @@ namespace SharpTimer
 
         private int GetPreviousPlayerRecord(CCSPlayerController? player)
         {
-            if (player == null) return int.MaxValue; // Return a large value if no previous record is found
+            if (player == null) return 0;
 
             string currentMapName = Server.MapName;
             string steamId = player.SteamID.ToString();
@@ -338,7 +352,7 @@ namespace SharpTimer
                 }
             }
 
-            return int.MaxValue; // Return a large value if no previous record is found
+            return 0;
         }
 
         private string FormatTimeDifference(int currentTicks, int previousTicks)
@@ -472,6 +486,20 @@ namespace SharpTimer
             return new Vector(0, 0, 0);
         }
 
+        private QAngle ParseQAngle(string qAngleString)
+        {
+            var values = qAngleString.Split(' ');
+            if (values.Length == 3 &&
+                float.TryParse(values[0], out float pitch) &&
+                float.TryParse(values[1], out float yaw) &&
+                float.TryParse(values[2], out float roll))
+            {
+                return new QAngle(pitch, yaw, roll);
+            }
+
+            return new QAngle(0, 0, 0);
+        }
+
         private Vector FindStartTriggerPos()
         {
             var triggers = Utilities.FindAllEntitiesByDesignerName<CBaseTrigger>("trigger_multiple");
@@ -528,24 +556,137 @@ namespace SharpTimer
         {
             if (player == null || respawnEnabled == false) return;
 
-            if(useTriggers == true)
+            // Remove checkpoints for the current player
+            if (playerCheckpoints.ContainsKey(player.UserId ?? 0))
+            {
+                playerCheckpoints.Remove(player.UserId ?? 0);
+            }
+
+            if (useTriggers == true)
             {
                 player.PlayerPawn.Value.Teleport(FindStartTriggerPos(), new QAngle(0, 90, 0), new Vector(0, 0, 0));
             }
             else
             {
                 player.PlayerPawn.Value.Teleport(currentRespawnPos, new QAngle(0, 90, 0), new Vector(0, 0, 0));
-            }        
+            }
             playerTimers[player.UserId ?? 0].IsTimerRunning = false;
             playerTimers[player.UserId ?? 0].TimerTicks = 0;
-            NativeAPI.IssueClientCommand((int)player.EntityIndex!.Value.Value - 1, $"play {beepSound}");
+            NativeAPI.IssueClientCommand((int)player.EntityIndex!.Value.Value - 1, $"play {respawnSound}");
+        }
+
+        [ConsoleCommand("css_cp", "Sets a checkpoint")]
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
+        public void SetPlayerCP(CCSPlayerController? player, CommandInfo command)
+        {
+            if (player == null || cpEnabled == false) return;
+
+            if (!player.PlayerPawn.Value.OnGroundLastTick)
+            {
+                player.PrintToChat(msgPrefix + $"{ChatColors.LightRed}Cant set checkpoint while in air");
+                NativeAPI.IssueClientCommand((int)player.EntityIndex!.Value.Value - 1, $"play {cpSoundAir}");
+                return;
+            }
+
+            // Get the player's current position and rotation
+            Vector currentPosition = player.Pawn.Value.CBodyComponent?.SceneNode?.AbsOrigin ?? new Vector(0, 0, 0);
+            QAngle currentRotation = player.PlayerPawn.Value.EyeAngles ?? new QAngle(0, 0, 0);
+
+            // Convert position and rotation to strings
+            string positionString = $"{currentPosition.X} {currentPosition.Y} {currentPosition.Z}";
+            string rotationString = $"{currentRotation.X} {currentRotation.Y} {currentRotation.Z}";
+
+            // Add the current position and rotation strings to the player's checkpoint list
+            if (!playerCheckpoints.ContainsKey(player.UserId ?? 0))
+            {
+                playerCheckpoints[player.UserId ?? 0] = new List<PlayerCheckpoint>();
+            }
+
+            playerCheckpoints[player.UserId ?? 0].Add(new PlayerCheckpoint
+            {
+                PositionString = positionString,
+                RotationString = rotationString
+            });
+
+            // Get the count of checkpoints for this player
+            int checkpointCount = playerCheckpoints[player.UserId ?? 0].Count;
+
+            // Print the chat message with the checkpoint count
+            player.PrintToChat(msgPrefix + $"Checkpoint set! {ChatColors.Green}#{checkpointCount}");
+            NativeAPI.IssueClientCommand((int)player.EntityIndex!.Value.Value - 1, $"play {cpSound}");
+        }
+
+        [ConsoleCommand("css_tp", "Tp to the most recent checkpoint")]
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
+        public void TpPlayerCP(CCSPlayerController? player, CommandInfo command)
+        {
+            if (player == null || cpEnabled == false) return;
+
+            // Check if the player has any checkpoints
+            if (!playerCheckpoints.ContainsKey(player.UserId ?? 0) || playerCheckpoints[player.UserId ?? 0].Count == 0)
+            {
+                player.PrintToChat(msgPrefix + "No checkpoints set!");
+                return;
+            }
+
+            // Get the most recent checkpoint from the player's list
+            PlayerCheckpoint lastCheckpoint = playerCheckpoints[player.UserId ?? 0].Last();
+
+            // Convert position and rotation strings to Vector and QAngle
+            Vector position = ParseVector(lastCheckpoint.PositionString ?? "0 0 0");
+            QAngle rotation = ParseQAngle(lastCheckpoint.RotationString ?? "0 0 0");
+
+            // Teleport the player to the most recent checkpoint, including the saved rotation
+            player.PlayerPawn.Value.Teleport(position, rotation, new Vector(0, 0, 0));
+
+            // Play a sound or provide feedback to the player
+            NativeAPI.IssueClientCommand((int)player.EntityIndex!.Value.Value - 1, $"play {tpSound}");
+            player.PrintToChat(msgPrefix + "Teleported to most recent checkpoint!");
+        }
+
+        [ConsoleCommand("css_prevcp", "Tp to the previous checkpoint")]
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
+        public void TpPreviousCP(CCSPlayerController? player, CommandInfo command)
+        {
+            if (player == null || cpEnabled == false) return;
+
+            // Check if the player has any checkpoints
+            if (!playerCheckpoints.ContainsKey(player.UserId ?? 0) || playerCheckpoints[player.UserId ?? 0].Count == 0)
+            {
+                player.PrintToChat(msgPrefix + "No checkpoints set!");
+                return;
+            }
+
+            // Get the current list of checkpoints for the player
+            List<PlayerCheckpoint> checkpoints = playerCheckpoints[player.UserId ?? 0];
+
+            // If there is only one checkpoint, teleport to it
+            if (checkpoints.Count == 1)
+            {
+                TpPlayerCP(player, command);
+            }
+            else
+            {
+                // Get the second-to-last checkpoint from the player's list
+                PlayerCheckpoint previousCheckpoint = checkpoints[checkpoints.Count - 2];
+
+                // Convert position and rotation strings to Vector and QAngle
+                Vector position = ParseVector(previousCheckpoint.PositionString ?? "0 0 0");
+                QAngle rotation = ParseQAngle(previousCheckpoint.RotationString ?? "0 0 0");
+
+                // Teleport the player to the previous checkpoint, including the saved rotation
+                player.PlayerPawn.Value.Teleport(position, rotation, new Vector(0, 0, 0));
+
+                // Play a sound or provide feedback to the player
+                NativeAPI.IssueClientCommand((int)player.EntityIndex!.Value.Value - 1, $"play {tpSound}");
+                player.PrintToChat(msgPrefix + "Teleported to previous checkpoint!");
+            }
         }
 
         private void LoadConfig()
         {
-            
             Server.ExecuteCommand("exec SharpTimer/config.cfg");
-            
+
             string currentMapName = Server.MapName;
 
             string mapdataFileName = "SharpTimer/mapdata.json";
@@ -556,9 +697,7 @@ namespace SharpTimer
                 string json = File.ReadAllText(mapdataPath);
                 var mapData = JsonSerializer.Deserialize<Dictionary<string, MapInfo>>(json);
 
-                if (mapData == null) return;
-
-                if (mapData.TryGetValue(currentMapName, out var mapInfo))
+                if (mapData != null && mapData.TryGetValue(currentMapName, out var mapInfo))
                 {
                     currentMapStartTrigger = mapInfo.MapStartTrigger;
 
@@ -578,7 +717,10 @@ namespace SharpTimer
                         currentMapEndC2 = ParseVector(mapInfo.MapEndC2);
                     }
 
-                    currentRespawnPos = ParseVector(mapInfo.RespawnPos);
+                    if (!string.IsNullOrEmpty(mapInfo.RespawnPos))
+                    {
+                        currentRespawnPos = ParseVector(mapInfo.RespawnPos);
+                    }
 
                     // Check if either MapStartTrigger or MapEndTrigger is null or empty
                     if (string.IsNullOrEmpty(currentMapStartTrigger) || string.IsNullOrEmpty(currentMapEndTrigger))

@@ -37,6 +37,10 @@
     "MapEndC2": "-14319 527 -6223",
     "RespawnPos": "-13904 336 12864"
   },
+  "kz_victoria": {
+    "MapStartTrigger": "timer_startzone",
+    "MapEndTrigger": "timer_endzone"
+  },
   "bhop_at_night": {
     "MapStartC1": "-686.97 -272.03 93.00",
     "MapStartC2": "-208.03 -431.97 93.00",
