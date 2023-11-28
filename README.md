@@ -8,13 +8,26 @@ MetaMod: https://cs2.poggu.me/metamod/installation/
 CounterStrikeSharp: https://docs.cssharp.dev/
 
 ## Features
-Timer, Speedometer and Keys
+**Timer, Speedometer and Keys**
 
-![alt text](https://i.imgur.com/Y2BGvwd.png)
+![alt text](https://i.imgur.com/FQrIcuP.png)
 
-Players PBs
+**Players PBs**
 
-![alt text](https://i.imgur.com/9Sfhq0S.png)
+![alt text](https://i.imgur.com/VDtLfU5.png)
+
+![alt text](https://i.imgur.com/2ld2iDW.png)
+
+**Checkpoints** *(disabled by default)*
+
+![alt text](https://i.imgur.com/ryb5GQu.png)
+
+![alt text](https://i.imgur.com/fjO6ENc.png)
+
+![alt text](https://i.imgur.com/vaJXZ1M.png)
+
+![alt text](https://i.imgur.com/BDpKq4T.png)
+
 
 ### Installing
 
@@ -28,10 +41,18 @@ Players PBs
 * Here a collection of maps supported by default: https://steamcommunity.com/sharedfiles/filedetails/?id=3095738559
 
 ## Commands
-- `!r` --Teleports the player back to Spawn
-- `!top` --Prints the top 10 times on the current map
+
+| Command  | What it does |
+| ------------- | ------------- |
+| `!r`  | Teleports the player back to Spawn |
+| `!top`  | Prints the top 10 times on the current map |
+| `!rank` | Tells you your rank on the current map |
+| `!cp` | Sets a checkpoint |
+| `!tp` | Teleports the player to the checkpoint |
+| `!prevcp` | Teleports the player to the previous checkpoint |
 
 ### Configuration
+* See `game/csgo/cfg/SharpTimer/config.cfg` for basic plugin configuration *(yes you can enable checkpoints there)*
 
 * To add Map Start and End zones you can simply add the `targetnames` of the triggers in the `mapdata.json` inside of `game/csgo/cfg/SharpTimer/` using `MapStartTrigger` and  `MapEndTrigger`
 
