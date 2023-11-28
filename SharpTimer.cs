@@ -175,7 +175,7 @@ namespace SharpTimer
 
                 var player = new CCSPlayerController(new CCSPlayerPawn(entity.Handle).Controller.Value.Handle);
 
-                if (!connectedPlayers.Contains(player)) return HookResult.Continue;
+                if (!connectedPlayers.Contains(player) || playerTimers[player.UserId ?? 0].IsTimerRunning == false) return HookResult.Continue;
 
                 if (trigger.Entity.Name == currentMapEndTrigger && player.IsValid)
                 {
@@ -209,7 +209,7 @@ namespace SharpTimer
             Console.WriteLine("[SharpTimer] Plugin Loaded");
         }
 
-        private string FormatTime(int ticks)
+        private static string FormatTime(int ticks)
         {
             TimeSpan timeSpan = TimeSpan.FromSeconds(ticks / 64.0);
             int centiseconds = (int)((ticks % 64) * (100.0 / 64.0));
@@ -361,7 +361,7 @@ namespace SharpTimer
             return 0;
         }
 
-        private string FormatTimeDifference(int currentTicks, int previousTicks)
+        private static string FormatTimeDifference(int currentTicks, int previousTicks)
         {
             int differenceTicks = previousTicks - currentTicks;
             string sign = (differenceTicks > 0) ? "-" : "+";
@@ -372,7 +372,7 @@ namespace SharpTimer
             return $"{sign}{timeDifference.Minutes:D1}:{timeDifference.Seconds:D2}.{centiseconds:D2}";
         }
 
-        public Dictionary<string, int> GetSortedRecords()
+        public static Dictionary<string, int> GetSortedRecords()
         {
             string currentMapName = Server.MapName;
 
@@ -463,7 +463,7 @@ namespace SharpTimer
         }
 
 
-        private string GetPlayerNameFromSavedSteamID(string steamId)
+        private static string GetPlayerNameFromSavedSteamID(string steamId)
         {
             string currentMapName = Server.MapName;
 
@@ -501,7 +501,7 @@ namespace SharpTimer
             return "Unknown"; // Return a default name if the player name is not found or an error occurs
         }
 
-        private Vector ParseVector(string vectorString)
+        private static Vector ParseVector(string vectorString)
         {
             var values = vectorString.Split(' ');
             if (values.Length == 3 &&
@@ -515,7 +515,7 @@ namespace SharpTimer
             return new Vector(0, 0, 0);
         }
 
-        private QAngle ParseQAngle(string qAngleString)
+        private static QAngle ParseQAngle(string qAngleString)
         {
             var values = qAngleString.Split(' ');
             if (values.Length == 3 &&
@@ -734,36 +734,24 @@ namespace SharpTimer
 
                 if (mapData != null && mapData.TryGetValue(currentMapName, out var mapInfo))
                 {
-                    currentMapStartTrigger = mapInfo.MapStartTrigger;
-
-                    // Check if MapStartC1 and MapStartC2 are not null or empty before parsing
-                    if (!string.IsNullOrEmpty(mapInfo.MapStartC1) && !string.IsNullOrEmpty(mapInfo.MapStartC2))
-                    {
-                        currentMapStartC1 = ParseVector(mapInfo.MapStartC1);
-                        currentMapStartC2 = ParseVector(mapInfo.MapStartC2);
-                    }
-
-                    currentMapEndTrigger = mapInfo.MapEndTrigger;
-
-                    // Check if MapEndC1 and MapEndC2 are not null or empty before parsing
-                    if (!string.IsNullOrEmpty(mapInfo.MapEndC1) && !string.IsNullOrEmpty(mapInfo.MapEndC2))
-                    {
-                        currentMapEndC1 = ParseVector(mapInfo.MapEndC1);
-                        currentMapEndC2 = ParseVector(mapInfo.MapEndC2);
-                    }
-
                     if (!string.IsNullOrEmpty(mapInfo.RespawnPos))
                     {
                         currentRespawnPos = ParseVector(mapInfo.RespawnPos);
                     }
 
-                    // Check if either MapStartTrigger or MapEndTrigger is null or empty
-                    if (string.IsNullOrEmpty(currentMapStartTrigger) || string.IsNullOrEmpty(currentMapEndTrigger))
+                    if (!string.IsNullOrEmpty(mapInfo.MapStartC1) && !string.IsNullOrEmpty(mapInfo.MapStartC2) && !string.IsNullOrEmpty(mapInfo.MapEndC1) && !string.IsNullOrEmpty(mapInfo.MapEndC2))
                     {
+                        currentMapStartC1 = ParseVector(mapInfo.MapStartC1);
+                        currentMapStartC2 = ParseVector(mapInfo.MapStartC2);
+                        currentMapEndC1 = ParseVector(mapInfo.MapEndC1);
+                        currentMapEndC2 = ParseVector(mapInfo.MapEndC2);
                         useTriggers = false;
                     }
-                    else
+                    
+                    if(!string.IsNullOrEmpty(mapInfo.MapStartTrigger) && !string.IsNullOrEmpty(mapInfo.MapEndTrigger))
                     {
+                        currentMapStartTrigger = mapInfo.MapStartTrigger;
+                        currentMapEndTrigger = mapInfo.MapEndTrigger;
                         useTriggers = true;
                     }
                 }
