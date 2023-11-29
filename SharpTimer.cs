@@ -27,6 +27,7 @@ namespace SharpTimer
         public int TimerTicks { get; set; }
         public string? TimerRank { get; set; }
         public int CheckpointIndex { get; set; }
+        public CCSPlayer_MovementServices? MovementService { get; set; }
     }
 
     public class PlayerRecord
@@ -68,6 +69,7 @@ namespace SharpTimer
         public bool connectMsgEnabled = true;
         public bool srEnabled = true;
         public int srTimer = 120;
+        public bool removeCrouchFatigueEnabled = true;
 
         public string beepSound = "sounds/ui/csgo_ui_button_rollover_large.vsnd";
         public string respawnSound = "sounds/ui/menu_accept.vsnd";
@@ -112,6 +114,8 @@ namespace SharpTimer
                     }
 
                     playerTimers[player.UserId ?? 0].TimerRank = GetPlayerPlacementWithTotal(player);
+
+                    playerTimers[player.UserId ?? 0].MovementService = new CCSPlayer_MovementServices(player.PlayerPawn.Value.MovementServices!.Handle);
 
                     return HookResult.Continue;
                 }
@@ -184,6 +188,11 @@ namespace SharpTimer
                         if (!useTriggers)
                         {
                             CheckPlayerActions(player);
+                        }
+
+                        if (playerTimers[player.UserId ?? 0].MovementService != null && removeCrouchFatigueEnabled == true)
+                        {
+                            if(playerTimers[player.UserId ?? 0].MovementService.DuckSpeed != 7.0f) playerTimers[player.UserId ?? 0].MovementService.DuckSpeed = 7.0f;
                         }
                     }
                 }
@@ -820,6 +829,8 @@ namespace SharpTimer
             Server.ExecuteCommand("exec SharpTimer/config.cfg");
 
             if (srEnabled == true) ServerRecordADtimer();
+
+            if (removeCrouchFatigueEnabled == true) Server.ExecuteCommand("sv_timebetweenducks 0");
 
             string currentMapName = Server.MapName;
 
