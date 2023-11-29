@@ -73,8 +73,9 @@ SharpTimer is a simple Surf/KZ/Bhop/MG/Deathrun/etc. CS2 Timer plugin using Coun
 | `!top`  | Prints the top 10 times on the current map |
 | `!rank` | Tells you your rank on the current map |
 | `!cp` | Sets a checkpoint |
-| `!tp` | Teleports the player to the checkpoint |
+| `!tp` | Teleports the player to the latest checkpoint |
 | `!prevcp` | Teleports the player to the previous checkpoint |
+| `!nextcp` | Teleports the player to the previous checkpoint |
 
 ### Configuration
 * See `game/csgo/cfg/SharpTimer/config.cfg` for basic plugin configuration *(yes you can enable checkpoints there)*
