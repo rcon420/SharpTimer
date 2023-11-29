@@ -362,9 +362,13 @@ namespace SharpTimer
 
             string timeDifference = "";
             char ifFirstTimeColor = ChatColors.Red;
-            if (previousRecordTicks == 0)
+            if (previousRecordTicks != 0)
             {
                 timeDifference = FormatTimeDifference(currentTicks, previousRecordTicks);
+                ifFirstTimeColor = ChatColors.Red;
+            }
+            else
+            {
                 ifFirstTimeColor = ChatColors.Yellow;
             }
 
