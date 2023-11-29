@@ -1,6 +1,10 @@
 # SharpTimer
 SharpTimer is a simple Surf/KZ/Bhop/MG/Deathrun/etc. CS2 Timer plugin using CounterStrikeSharp
 
+# Demo Video
+[![Demo](https://i.imgur.com/Xr0nDqC.png)](https://www.youtube.com/watch?v=wUKOQ68K5t8)
+
+
 ### Dependencies
 
 [**MetaMod**](https://cs2.poggu.me/metamod/installation/)
