@@ -82,6 +82,14 @@ SharpTimer is a simple Surf/KZ/Bhop/MG/Deathrun/etc. CS2 Timer plugin using Coun
 
 * To add Map Start and End zones you can simply add the `targetnames` of the triggers in the `mapdata.json` inside of `game/csgo/cfg/SharpTimer/` using `MapStartTrigger` and  `MapEndTrigger`
 
+  You can look up the trigger targetnames using these offline server commands:
+
+  ```
+  sv_cheats true
+  ent_find trigger_multiple (will list all 'zoning' triggers that mapper/port has put in)
+  ent_bbox <targetname> (will draw it in game)
+  ```
+
 
   Many maps do not contain any `startzone` or `endzone` triggers. As a workaround you can setup the trigger manually be defining its opposite corner coordinates with `MapStartC1` and `MapStartC2`! if you are using the `getpos` or `cl_showpos 1` to get the coordinates you will have to subtract `64 units` from the Z axis since the coordinates given are at the height of your camera and not your feet! You also need to define the `RespawnPos` for the `!r` command using `RespawmPos`
 
