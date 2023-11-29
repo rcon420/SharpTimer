@@ -112,7 +112,6 @@ namespace SharpTimer
                     }
 
                     playerTimers[player.UserId ?? 0].TimerRank = GetPlayerPlacementWithTotal(player);
-                    playerTimers[player.UserId ?? 0].CheckpointIndex = 2;
 
                     return HookResult.Continue;
                 }
@@ -250,7 +249,7 @@ namespace SharpTimer
                 {
                     string playerName = GetPlayerNameFromSavedSteamID(record.Key); // Get the player name using SteamID
                     Server.PrintToChatAll(msgPrefix + $" {ChatColors.Green}{playerName} {ChatColors.White}- {ChatColors.Green}{FormatTime(record.Value)}");
-                }            
+                }
             }, TimerFlags.REPEAT);
         }
 
@@ -816,7 +815,7 @@ namespace SharpTimer
         {
             Server.ExecuteCommand("exec SharpTimer/config.cfg");
 
-            if(srEnabled == true) ServerRecordADtimer();
+            if (srEnabled == true) ServerRecordADtimer();
 
             string currentMapName = Server.MapName;
 
