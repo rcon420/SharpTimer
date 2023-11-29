@@ -49,7 +49,7 @@ namespace SharpTimer
         private List<CCSPlayerController> connectedPlayers = new List<CCSPlayerController>();
 
         public override string ModuleName => "SharpTimer";
-        public override string ModuleVersion => "0.0.1";
+        public override string ModuleVersion => "0.0.5";
         public override string ModuleAuthor => "DEAFPS https://github.com/DEAFPS/";
         public override string ModuleDescription => "A simple CSS Timer Plugin";
         public string msgPrefix = $" {ChatColors.Green} [SharpTimer] {ChatColors.White}";
