@@ -37,6 +37,10 @@
     "MapEndC2": "-14319 527 -6223",
     "RespawnPos": "-13904 336 12864"
   },
+    "surf_benevolent": {
+    "MapStartTrigger": "z_stage1",
+    "MapEndTrigger": "z_end"
+  },
   "kz_victoria": {
     "MapStartTrigger": "timer_startzone",
     "MapEndTrigger": "timer_endzone"
