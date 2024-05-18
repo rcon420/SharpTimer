@@ -1,66 +1,155 @@
+> [!CAUTION]
+> This project will not receive any further updates as im unable to continue working on it. Thank you for all the support and time spend testing the pre-release versions. Feel free to fork and yoink anything you want and build upon it
+
+<div align="center">
+  <img src="https://github.com/DEAFPS/SharpTimer/assets/43534349/c353662a-eb64-43e7-9294-40cfed3d58af" alt="" style="margin: 0;">
+</div>
+
+
 # SharpTimer
-SharpTimer is a simple Surf/KZ/Bhop CS2 Timer plugin using CounterStrikeSharp
+SharpTimer is a "simple" Surf/KZ/Bhop/MG/Deathrun/etc. CS2 Timer plugin using CounterStrikeSharp<br>
 
-### Dependencies
-
-MetaMod: https://cs2.poggu.me/metamod/installation/
-
-CounterStrikeSharp: https://docs.cssharp.dev/
 
 ## Features
-Timer, Speedometer and Keys
+<details> 
+  <summary>Timer, speedometer and key input with color customization</summary>
+   <img src="https://i.imgur.com/TxAwgbC.png">
+</details>
 
-![alt text](https://i.imgur.com/v6zmECN.png)
+<details> 
+  <summary>Players PB</summary>
+  <img src="https://i.imgur.com/9HGOhRR.png">
+</details>
 
-Players PBs
+<details> 
+  <summary>Surf Stages and Checkpoints</summary>
+  <img src="https://i.imgur.com/xL2y6vs.png">
+</details>
 
-![alt text](https://i.imgur.com/9Sfhq0S.png)
+<details> 
+  <summary>Replays</summary>
+</details>
 
-### Installing
+<details> 
+  <summary>Discord Webhook</summary>
+</details>
 
-* Unzip into your servers `game/csgo/` dir
-* Its recommended to have a custom server cfg with your desired settings (for example surf or kz)
-  
-  Like this one for Surf: https://raw.githubusercontent.com/DEAFPS/cs-cfg/main/surf.cfg
-  
-  You can replace the contents of `gamemode_competitive.cfg` or `gamemode_casual.cfg` with it
-  
-* Here a collection of maps supported by default: https://steamcommunity.com/sharedfiles/filedetails/?id=3095738559
+<details> 
+  <summary>JumpStats</summary>
+</details>
 
-## Commands
-- `!r` --Teleports the player back to Spawn
-- `!top` --Prints the top 10 times on the current map
+<details> 
+  <summary>Map CFGs</summary>
+</details>
 
-### Configuration
+<details> 
+  <summary>Custom PlayerModels</summary>
+</details>
 
-* To add map Start, Respawn and End Areas head over to `game/csgo/cfg/SharpTimer/mapdata.json`
+<details> 
+  <summary>VIP Perks</summary>
+</details>
 
-  Add the coordinates of opposite corners for each of the Start and End Areas using `MapStartC1`, `MapStartC2` & `MapEndC1`, `MapEndC2`
+<details> 
+    <summary>Bonus stages</summary>
+  <img src="https://i.imgur.com/NURlZBK.png">
+</details>
 
-  After that set the `RespawnPos` to the coordinates you with the player will get teleported to once they use `!r`
+<details> 
+  <summary>Server Point System & Map Ranks</summary>
+</details>
 
-  To get the coordinates you can use either the console command `cl_showpos 1` or `getpos` to get the coordinates of where your player currently is.
+<details> 
+  <summary>Rank Icons</summary>
+  <img src="https://i.imgur.com/7vSKeCv.png">
+</details>
 
-  
-```
-{
-  "surf_kitsune": {
-    "MapStartC1": "-15744 -15343 816",
-    "MapStartC2": "-14974 -14832 816",
-    "MapEndC1": "-15540 10560 -11807",
-    "MapEndC2": "-16047 9793 -11807",
-    "RespawnPos": "-15360 -15068 817"
-  },
-  "surf_someothermap": {
-    "MapStartC1": "-15744 -15343 816",
-    "MapStartC2": "-14974 -14832 816",
-    "MapEndC1": "-15540 10560 -11807",
-    "MapEndC2": "-16047 9793 -11807",
-    "RespawnPos": "-15360 -15068 817"
-  }
-}
-```
-* I will try to add more map data by default in the future :) pull requests are also welcome
+<details> 
+  <summary>KZ Checkpoint system (disabled by default, check config)</summary>
+   <img src="https://i.imgur.com/USX5i8C.png"><br>
+   <img src="https://i.imgur.com/kWiHOlz.png"><br>
+   <img src="https://i.imgur.com/lXwXNN7.png"><br>
+   <img src="https://i.imgur.com/nyn76Q4.png">
+</details>
 
-## Author
-[@DEAFPS_](https://twitter.com/deafps_)
+## Dependencies
+
+[**MetaMod**](https://cs2.poggu.me/metamod/installation/)
+
+[**CounterStrikeSharp** *(v215 and up)*](https://github.com/roflmuffin/CounterStrikeSharp/releases)
+
+[**SharpTimerModelSetter** *(optional but recommended for custom player models)*](https://github.com/DEAFPS/SharpTimerModelSetter/)
+
+[**MovementUnlocker** *(optional but recommended)*](https://github.com/Source2ZE/MovementUnlocker)
+
+[**Web panel** *(optional but recommended)*](https://github.com/Letaryat/sharptimer-web-panel)
+
+
+## Install
+* Download the [latest release](https://github.com/DEAFPS/SharpTimer/releases),
+
+* Unzip into your servers `game/csgo/` directory,
+
+* :exclamation: See `game/csgo/cfg/SharpTimer/config.cfg` for basic plugin configuration,
+
+* :exclamation: It is recommended to have a custom server cfg with your desired settings (for example [SURF](https://github.com/DEAFPS/cs-cfg/blob/main/surf.cfg) or [KZ](https://github.com/DEAFPS/cs-cfg/blob/main/kz.cfg)),
+
+# [SharpTimer Wiki/Docs](https://github.com/DEAFPS/SharpTimer/wiki)
+
+# TODO List
+- [x] HUD
+  - [x] Speedometer
+  - [x] Pre
+  - [x] Timer
+  - [x] Info
+    - [x] PB
+    - [x] Map Rank Icon
+    - [x] Map Rank (ie 1/100)
+    - [x] Map Tier
+    - [x] Map Type
+  - [x] Spectator HUD
+- [x] Zones
+  - [x] Hook common triggers by default
+  - [x] Manual Zones
+  - [x] Hook Bonus Zones Triggers (KZ & Surf) 
+- [x] Player PBs
+  - [x] Save to Json
+  - [x] Save to MySQL
+- [x] Ranks
+  - [x] Map !top
+  - [x] Map !topbonus
+  - [x] Global server ranks
+    - [x] !points
+    - [x] Global Point system
+- [ ] Surf Stages/Checkpoint support
+  - [x] Stage/Checkpoint PBs with u/s
+    - [x] Json Stage/Checkpoint PBs saving
+    - [ ] MySql Stage/Checkpoint PBs saving
+- [x] MySQL
+	- [x] Basic Player Records
+  - [x] Player Server Stats
+  - [x] Player Map Stats
+- [x] Replays
+- [x] Jumpstats
+  - [x] Distance
+  - [x] Pre
+  - [x] Max
+  - [x] Height
+  - [x] Width
+  - [x] Sync
+  - [ ] Jump Types
+    - [x] Long Jump
+    - [x] BunnyHop
+    - [x] MultiBunnyHop
+    - [x] Jump Bug
+    - [ ] Edge Bug
+    - [ ] Ladder Jump
+- [ ] Silly Stuff
+  - [x] Color customization
+  - [x] Special Tester Gifs
+  - [x] Custom Player Gifs
+  - [x] Dioscord Webhook
+  - [ ] Strafe Sync Bar on HUD
+
+
+## Author: [@DEAFPS_](https://twitter.com/deafps_)
