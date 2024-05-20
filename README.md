@@ -3,4 +3,4 @@
 
 
 ## Please use this  supported version instead
-[*](https://github.com/Letaryat/poor-sharptimer)
+[click here](https://github.com/Letaryat/poor-sharptimer)
